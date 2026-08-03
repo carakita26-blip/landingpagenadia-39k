@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Excel Ultimate Pack - Kuasai Excel dari Nol</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        excel: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            200: '#bbf7d0',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                        },
+                        brandGold: '#f59e0b',
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .shiny-button {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .shiny-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -120%;
+            width: 60px;
+            height: 100%;
+            background: rgba(255,255,255,0.45);
+            transform: skewX(-25deg);
+            filter: blur(2px);
+            opacity: 0.9;
+            animation: shine 2.2s ease-in-out infinite;
+        }
+
+        @keyframes shine {
+            0% { left: -120%; }
+            50% { left: 120%; }
+            100% { left: 120%; }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased overflow-x-hidden pb-24 sm:pb-28">
+
+    <!-- Sticky Price / Checkout Bar -->
+    <div class="fixed inset-x-0 bottom-0 z-[60] border-t border-slate-200 bg-white/95 backdrop-blur-xl shadow-[0_-8px_24px_rgba(15,23,42,0.12)]">
+        <div class="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-8">
+            <div>
+                <p class="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-500">Harga spesial</p>
+                <p class="text-base font-extrabold text-slate-900">Rp 39.000</p>
+            </div>
+            <a href="https://nadiaexcel.myscalev.com/s/checkout?variant_ids=562319&qty=1" class="shiny-button inline-flex items-center justify-center rounded-xl bg-excel-600 px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-excel-600/25 transition-all duration-200 hover:bg-excel-700 active:scale-95 sm:px-5">
+                Ambil Akses Sekarang
+            </a>
+        </div>
+    </div>
+
+    <!-- Top Urgent Banner -->
+    <div class="bg-excel-900 text-white text-xs md:text-sm py-2 px-4 text-center font-medium sticky top-0 z-50 shadow-md">
+        🔥 <span class="text-brandGold font-bold">PROMO SPESIAL HARI INI:</span> Tersisa <span id="slot-counter" class="bg-red-500 px-1.5 py-0.5 rounded font-bold">3</span> slot untuk harga Rp 39.000!
+    </div>
+
+    <!-- Live Purchase Notification Toast (Top Left) -->
+    <div id="purchase-notification" class="fixed top-16 left-4 z-[100] transition-all duration-500 transform -translate-x-full opacity-0 pointer-events-none max-w-sm w-[90%] sm:w-80">
+        <div class="bg-white/95 backdrop-blur border border-slate-200 rounded-2xl shadow-xl p-4 flex items-start gap-3">
+            <!-- Icon -->
+            <div class="bg-excel-100 text-excel-700 p-2 rounded-xl flex-shrink-0">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                </svg>
+            </div>
+            <!-- Content -->
+            <div class="flex-1">
+                <p id="notif-text" class="text-xs text-slate-700 leading-normal">
+                    <!-- Text will be injected dynamically -->
+                </p>
+                <div class="flex items-center gap-1.5 mt-2">
+                    <span id="notif-time" class="text-[10px] text-slate-400 font-medium"><!-- Time will be injected --></span>
+                    <span class="inline-flex items-center gap-0.5 text-[10px] text-excel-700 font-bold bg-excel-50 px-1.5 py-0.5 rounded-full border border-excel-100">
+                        <span class="w-1.5 h-1.5 rounded-full bg-excel-600 animate-pulse"></span> Verified
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header / Navigation -->
+    <header class="py-4 px-6 bg-white border-b border-slate-100">
+        <div class="max-w-6xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <!-- SVG Excel Logo Icon -->
+                <div class="bg-excel-700 text-white p-2 rounded-lg shadow-md">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                </div>
+                <span class="text-xl font-extrabold tracking-tight text-slate-900">nadia<span class="text-excel-600">_excel</span></span>
+            </div>
+            <div class="hidden md:flex items-center gap-2">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-excel-100 text-excel-800">
+                    🟢 Online E-Course
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="relative pt-12 pb-20 px-6 overflow-hidden bg-gradient-to-b from-white to-excel-50">
+        <div class="max-w-4xl mx-auto text-center relative z-10">
+            <!-- Badge -->
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-excel-100 text-excel-800 text-sm font-semibold mb-6 animate-pulse">
+                <span>⭐ Dipelajari oleh 500+ peserta</span>
+            </div>
+
+            <!-- Headline -->
+            <h1 class="text-3xl md:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight leading-tight md:leading-none mb-6">
+                Kuasai Shortcut, Rumus, dan Studi Kasus Excel yang Sering Muncul di Kantor & Saat Tes Interview Kerja
+            </h1>
+
+            <!-- Badges Checklist -->
+            <div class="flex flex-wrap justify-center gap-3 md:gap-4 max-w-3xl mx-auto mb-10">
+                <span class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white border border-slate-200 shadow-sm text-sm font-semibold text-slate-700">
+                    <span class="text-excel-600">✅</span> Cocok untuk Fresh Graduate
+                </span>
+                <span class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white border border-slate-200 shadow-sm text-sm font-semibold text-slate-700">
+                    <span class="text-excel-600">✅</span> Cocok untuk Admin, Finance, HR, dan Staff Kantoran
+                </span>
+                <span class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white border border-slate-200 shadow-sm text-sm font-semibold text-slate-700">
+                    <span class="text-excel-600">✅</span> Bisa Dipelajari dari Nol
+                </span>
+            </div>
+
+            <!-- Main CTA -->
+            <div class="mb-12">
+                <a href="#harga" class="inline-flex items-center justify-center w-full sm:w-auto px-8 py-4 text-lg font-bold text-white bg-excel-600 hover:bg-excel-700 active:bg-excel-800 rounded-2xl shadow-lg shadow-excel-600/30 hover:shadow-excel-600/40 transition-all duration-200 transform hover:-translate-y-0.5">
+                    Mulai Belajar Sekarang — Hanya Rp 39.000
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonial Section -->
+    <section class="py-16 px-6 bg-white border-y border-slate-100">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-2xl md:text-3xl font-extrabold text-slate-900 uppercase tracking-wide">
+                    TESTIMONI dari mereka yang udah terbantu
+                </h2>
+                <div class="w-20 h-1 bg-excel-600 mx-auto mt-3 rounded-full"></div>
+            </div>
+
+            <!-- Testimonial Slider -->
+            <div class="mb-8">
+                <div class="relative overflow-hidden rounded-3xl min-h-[560px]">
+                    <div id="testimonial-track" class="flex transition-transform duration-500 ease-in-out">
+                        <div class="w-full min-w-full shrink-0 flex justify-center items-center p-4 sm:p-6">
+                            <img src="testi 1.jpeg" alt="Testimoni 1" class="max-h-[560px] w-auto max-w-[320px] rounded-[1.5rem] object-contain shadow-2xl shadow-slate-200/30 sm:max-w-[360px] md:max-w-[380px]">
+                        </div>
+                        <div class="w-full min-w-full shrink-0 flex justify-center items-center p-4 sm:p-6">
+                            <img src="testi 2.jpeg" alt="Testimoni 2" class="max-h-[560px] w-auto max-w-[320px] rounded-[1.5rem] object-contain shadow-2xl shadow-slate-200/30 sm:max-w-[360px] md:max-w-[380px]">
+                        </div>
+                        <div class="w-full min-w-full shrink-0 flex justify-center items-center p-4 sm:p-6">
+                            <img src="testi 3.jpeg" alt="Testimoni 3" class="max-h-[560px] w-auto max-w-[320px] rounded-[1.5rem] object-contain shadow-2xl shadow-slate-200/30 sm:max-w-[360px] md:max-w-[380px]">
+                        </div>
+                        <div class="w-full min-w-full shrink-0 flex justify-center items-center p-4 sm:p-6">
+                            <img src="testi 4.jpeg" alt="Testimoni 4" class="max-h-[560px] w-auto max-w-[320px] rounded-[1.5rem] object-contain shadow-2xl shadow-slate-200/30 sm:max-w-[360px] md:max-w-[380px]">
+                        </div>
+                        <div class="w-full min-w-full shrink-0 flex justify-center items-center p-4 sm:p-6">
+                            <img src="testi 5.jpeg" alt="Testimoni 5" class="max-h-[560px] w-auto max-w-[320px] rounded-[1.5rem] object-contain shadow-2xl shadow-slate-200/30 sm:max-w-[360px] md:max-w-[380px]">
+                        </div>
+                        <div class="w-full min-w-full shrink-0 flex justify-center items-center p-4 sm:p-6">
+                            <img src="testi 6.jpg" alt="Testimoni 6" class="max-h-[560px] w-auto max-w-[320px] rounded-[1.5rem] object-contain shadow-2xl shadow-slate-200/30 sm:max-w-[360px] md:max-w-[380px]">
+                        </div>
+                        <div class="w-full min-w-full shrink-0 flex justify-center items-center p-4 sm:p-6">
+                            <img src="testi 7.jpg" alt="Testimoni 7" class="max-h-[560px] w-auto max-w-[320px] rounded-[1.5rem] object-contain shadow-2xl shadow-slate-200/30 sm:max-w-[360px] md:max-w-[380px]">
+                        </div>
+                    </div>
+
+                    <button onclick="changeTestimonial(-1)" class="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-white/90 p-3 shadow-md text-slate-700 hover:bg-white transition-all">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                    </button>
+                    <button onclick="changeTestimonial(1)" class="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-white/90 p-3 shadow-md text-slate-700 hover:bg-white transition-all">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </button>
+                </div>
+
+                <div id="testimonial-dots" class="flex justify-center gap-2 mt-4">
+                    <button class="h-2.5 w-2.5 rounded-full bg-excel-600 transition-all" onclick="goToTestimonial(0)"></button>
+                    <button class="h-2.5 w-2.5 rounded-full bg-slate-300 transition-all" onclick="goToTestimonial(1)"></button>
+                    <button class="h-2.5 w-2.5 rounded-full bg-slate-300 transition-all" onclick="goToTestimonial(2)"></button>
+                    <button class="h-2.5 w-2.5 rounded-full bg-slate-300 transition-all" onclick="goToTestimonial(3)"></button>
+                    <button class="h-2.5 w-2.5 rounded-full bg-slate-300 transition-all" onclick="goToTestimonial(4)"></button>
+                    <button class="h-2.5 w-2.5 rounded-full bg-slate-300 transition-all" onclick="goToTestimonial(5)"></button>
+                    <button class="h-2.5 w-2.5 rounded-full bg-slate-300 transition-all" onclick="goToTestimonial(6)"></button>
+                </div>
+            </div>
+
+            <!-- Footer Testimonial -->
+            <div class="text-center">
+                <p class="text-lg font-bold text-slate-700">
+                    dan masih banyak lagi yang udah terbantu dari produk ini 😀
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pain Point Section -->
+    <section class="py-20 px-6 bg-slate-900 text-white">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="text-3xl md:text-4xl font-extrabold text-center mb-12 tracking-tight">
+                Pernah Mengalami Hal kayak gini?
+            </h2>
+
+            <!-- Pain Points List -->
+            <div class="space-y-4 max-w-2xl mx-auto mb-12">
+                <div class="flex items-start gap-4 p-4 rounded-xl bg-slate-800/50 border border-slate-800">
+                    <span class="text-2xl flex-shrink-0">❌</span>
+                    <p class="text-slate-300 font-medium pt-0.5">Bingung saat diminta mengolah data di Excel</p>
+                </div>
+                <div class="flex items-start gap-4 p-4 rounded-xl bg-slate-800/50 border border-slate-800">
+                    <span class="text-2xl flex-shrink-0">❌</span>
+                    <p class="text-slate-300 font-medium pt-0.5">Gugup ketika menghadapi tes Excel saat interview kerja</p>
+                </div>
+                <div class="flex items-start gap-4 p-4 rounded-xl bg-slate-800/50 border border-slate-800">
+                    <span class="text-2xl flex-shrink-0">❌</span>
+                    <p class="text-slate-300 font-medium pt-0.5">Menghabiskan waktu berjam-jam hanya untuk membuat laporan sederhana</p>
+                </div>
+                <div class="flex items-start gap-4 p-4 rounded-xl bg-slate-800/50 border border-slate-800">
+                    <span class="text-2xl flex-shrink-0">❌</span>
+                    <p class="text-slate-300 font-medium pt-0.5">Sering bertanya ke rekan kerja karena tidak tahu rumus yang harus digunakan</p>
+                </div>
+                <div class="flex items-start gap-4 p-4 rounded-xl bg-slate-800/50 border border-slate-800">
+                    <span class="text-2xl flex-shrink-0">❌</span>
+                    <p class="text-slate-300 font-medium pt-0.5">Merasa skill Excel masih tertinggal dibanding kandidat lain</p>
+                </div>
+            </div>
+
+            <!-- Pain Point Subtext -->
+            <div class="text-center max-w-2xl mx-auto p-6 bg-slate-800 rounded-2xl border border-slate-700">
+                <p class="text-lg text-slate-300 leading-relaxed">
+                    Kalau iya, kamu tidak sendirian.
+                    Banyak orang belajar Excel secara acak dari YouTube dan media sosial.
+                    Akhirnya tahu sedikit-sedikit, tapi tetap bingung saat harus menggunakannya di dunia kerja.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Vision / Transformation Section -->
+    <section class="py-20 px-6 bg-excel-50 relative overflow-hidden">
+        <div class="max-w-4xl mx-auto relative z-10">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight">
+                    Bayangkan 30 Hari Dari Sekarang...
+                </h2>
+                <div class="w-20 h-1 bg-excel-600 mx-auto mt-4 rounded-full"></div>
+            </div>
+
+            <!-- Transformations Checklist -->
+            <div class="grid sm:grid-cols-2 gap-6 max-w-3xl mx-auto mb-12">
+                <div class="flex items-start gap-3 p-5 rounded-2xl bg-white shadow-sm border border-excel-100">
+                    <span class="text-xl flex-shrink-0">✅</span>
+                    <p class="text-slate-700 font-semibold">Kamu sudah memahami rumus-rumus Excel yang paling sering digunakan.</p>
+                </div>
+                <div class="flex items-start gap-3 p-5 rounded-2xl bg-white shadow-sm border border-excel-100">
+                    <span class="text-xl flex-shrink-0">✅</span>
+                    <p class="text-slate-700 font-semibold">Kamu bisa mengerjakan laporan lebih cepat.</p>
+                </div>
+                <div class="flex items-start gap-3 p-5 rounded-2xl bg-white shadow-sm border border-excel-100">
+                    <span class="text-xl flex-shrink-0">✅</span>
+                    <p class="text-slate-700 font-semibold">Kamu lebih percaya diri saat menghadapi tes Excel.</p>
+                </div>
+                <div class="flex items-start gap-3 p-5 rounded-2xl bg-white shadow-sm border border-excel-100">
+                    <span class="text-xl flex-shrink-0">✅</span>
+                    <p class="text-slate-700 font-semibold">Dan ketika ada tugas yang berhubungan dengan data, kamu tidak lagi panik atau bergantung pada orang lain.</p>
+                </div>
+            </div>
+
+            <!-- Vision Footer -->
+            <div class="text-center max-w-2xl mx-auto">
+                <p class="text-lg md:text-xl font-bold text-excel-900">
+                    Semua itu bisa dimulai dari belajar dengan materi yang terstruktur dan mudah dipahami.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- What You'll Learn Section -->
+    <section class="py-20 px-6 bg-white">
+        <div class="max-w-5xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-5xl font-black text-slate-900 tracking-tight">
+                    Apa yang Akan Kamu Pelajari?
+                </h2>
+                <p class="text-slate-500 mt-2">Materi lengkap, runtut, dan siap langsung dipraktikkan</p>
+                <div class="w-24 h-1 bg-excel-600 mx-auto mt-4 rounded-full"></div>
+            </div>
+
+            <!-- Course Modules -->
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Module 1 -->
+                <div class="p-6 rounded-2xl bg-slate-50 border border-slate-100 hover:border-excel-200 hover:shadow-lg transition-all duration-300">
+                    <div class="w-12 h-12 rounded-xl bg-excel-100 text-excel-700 flex items-center justify-center font-bold text-xl mb-4">01</div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-3">Excel Dasar untuk Pemula</h3>
+                    <ul class="space-y-2 text-slate-600 text-sm">
+                        <li class="flex items-center gap-2"><span>✅</span> Mengenal menu dan fungsi Excel dari nol</li>
+                        <li class="flex items-center gap-2"><span>✅</span> Memahami cara kerja Excel dengan benar</li>
+                    </ul>
+                </div>
+
+                <!-- Module 2 -->
+                <div class="p-6 rounded-2xl bg-slate-50 border border-slate-100 hover:border-excel-200 hover:shadow-lg transition-all duration-300">
+                    <div class="w-12 h-12 rounded-xl bg-excel-100 text-excel-700 flex items-center justify-center font-bold text-xl mb-4">02</div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-3">Formatting & Visualisasi Data</h3>
+                    <ul class="space-y-2 text-slate-600 text-sm">
+                        <li class="flex items-center gap-2"><span>✅</span> Membuat data lebih rapi dan profesional</li>
+                        <li class="flex items-center gap-2"><span>✅</span> Membuat grafik yang mudah dipahami</li>
+                    </ul>
+                </div>
+
+                <!-- Module 3 -->
+                <div class="p-6 rounded-2xl bg-slate-50 border border-slate-100 hover:border-excel-200 hover:shadow-lg transition-all duration-300">
+                    <div class="w-12 h-12 rounded-xl bg-excel-100 text-excel-700 flex items-center justify-center font-bold text-xl mb-4">03</div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-3">100+ Shortcut Excel</h3>
+                    <ul class="space-y-2 text-slate-600 text-sm">
+                        <li class="flex items-center gap-2"><span>✅</span> Shortcut yang benar-benar dipakai di dunia kerja</li>
+                        <li class="flex items-center gap-2"><span>✅</span> Menghemat waktu kerja setiap hari</li>
+                    </ul>
+                </div>
+
+                <!-- Module 4 -->
+                <div class="p-6 rounded-2xl bg-slate-50 border border-slate-100 hover:border-excel-200 hover:shadow-lg transition-all duration-300">
+                    <div class="w-12 h-12 rounded-xl bg-excel-100 text-excel-700 flex items-center justify-center font-bold text-xl mb-4">04</div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-3">Formula Excel Penting</h3>
+                    <ul class="space-y-2 text-slate-600 text-sm">
+                        <li class="flex items-center gap-1.5"><span>✅</span> SUM</li>
+                        <li class="flex items-center gap-1.5"><span>✅</span> IF</li>
+                        <li class="flex items-center gap-1.5"><span>✅</span> VLOOKUP</li>
+                        <li class="flex items-center gap-1.5"><span>✅</span> HLOOKUP</li>
+                        <li class="flex items-center gap-1.5"><span>✅</span> INDEX MATCH</li>
+                        <li class="flex items-center gap-1.5"><span>✅</span> COUNTIF</li>
+                        <li class="flex items-center gap-1.5 text-excel-700 font-medium"><span>✅</span> Dan formula penting lainnya</li>
+                    </ul>
+                </div>
+
+                <!-- Module 5 -->
+                <div class="p-6 rounded-2xl bg-slate-50 border border-slate-100 hover:border-excel-200 hover:shadow-lg transition-all duration-300">
+                    <div class="w-12 h-12 rounded-xl bg-excel-100 text-excel-700 flex items-center justify-center font-bold text-xl mb-4">05</div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-3">Analisis Data</h3>
+                    <ul class="space-y-2 text-slate-600 text-sm">
+                        <li class="flex items-center gap-2"><span>✅</span> Pivot Table</li>
+                        <li class="flex items-center gap-2"><span>✅</span> Pengolahan data praktis</li>
+                        <li class="flex items-center gap-2"><span>✅</span> Teknik analisis sederhana untuk kebutuhan kantor</li>
+                    </ul>
+                </div>
+
+                <!-- Module 6 -->
+                <div class="p-6 rounded-2xl bg-slate-50 border border-slate-100 hover:border-excel-200 hover:shadow-lg transition-all duration-300">
+                    <div class="w-12 h-12 rounded-xl bg-excel-100 text-excel-700 flex items-center justify-center font-bold text-xl mb-4">06</div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-3">Studi Kasus Dunia Kerja</h3>
+                    <ul class="space-y-2 text-slate-600 text-sm">
+                        <li class="flex items-center gap-2"><span>✅</span> Membuat absensi otomatis</li>
+                        <li class="flex items-center gap-2"><span>✅</span> Membuat barcode</li>
+                        <li class="flex items-center gap-2"><span>✅</span> Membuat form tanda tangan</li>
+                        <li class="flex items-center gap-2"><span>✅</span> Studi kasus pekerjaan admin dan staff kantor</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Last Module Block (Centered) -->
+            <div class="mt-6 max-w-md mx-auto p-6 rounded-2xl bg-slate-50 border border-slate-100 hover:border-excel-200 hover:shadow-lg transition-all duration-300">
+                <div class="w-12 h-12 rounded-xl bg-excel-100 text-excel-700 flex items-center justify-center font-bold text-xl mb-4">07</div>
+                <h3 class="text-xl font-bold text-slate-900 mb-3">Persiapan Interview Kerja</h3>
+                <ul class="space-y-2 text-slate-600 text-sm">
+                    <li class="flex items-center gap-2"><span>✅</span> Kumpulan soal tes Excel</li>
+                    <li class="flex items-center gap-2"><span>✅</span> Latihan studi kasus</li>
+                    <li class="flex items-center gap-2"><span>✅</span> Pembahasan jawaban</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Outcoms / Benefits Section -->
+    <section class="py-20 px-6 bg-slate-900 text-white relative">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="text-2xl md:text-4xl font-extrabold text-center mb-12 tracking-tight">
+                Setelah Belajar Materi Ini Kamu Bisa
+            </h2>
+
+            <div class="grid sm:grid-cols-2 gap-4 max-w-3xl mx-auto">
+                <div class="flex items-center gap-3 p-4 rounded-xl bg-slate-800 border border-slate-700/50">
+                    <span class="text-yellow-400 font-bold text-xl">⚡</span>
+                    <span class="font-medium text-slate-200">Menyelesaikan pekerjaan lebih cepat</span>
+                </div>
+                <div class="flex items-center gap-3 p-4 rounded-xl bg-slate-800 border border-slate-700/50">
+                    <span class="text-yellow-400 font-bold text-xl">⚡</span>
+                    <span class="font-medium text-slate-200">Lebih percaya diri saat tes kerja</span>
+                </div>
+                <div class="flex items-center gap-3 p-4 rounded-xl bg-slate-800 border border-slate-700/50">
+                    <span class="text-yellow-400 font-bold text-xl">⚡</span>
+                    <span class="font-medium text-slate-200">Membuat laporan dengan lebih profesional</span>
+                </div>
+                <div class="flex items-center gap-3 p-4 rounded-xl bg-slate-800 border border-slate-700/50">
+                    <span class="text-yellow-400 font-bold text-xl">⚡</span>
+                    <span class="font-medium text-slate-200">Menghemat waktu kerja setiap hari</span>
+                </div>
+                <div class="flex items-center gap-3 p-4 rounded-xl bg-slate-800 border border-slate-700/50">
+                    <span class="text-yellow-400 font-bold text-xl">⚡</span>
+                    <span class="font-medium text-slate-200">Meningkatkan nilai jual diri saat melamar pekerjaan</span>
+                </div>
+                <div class="flex items-center gap-3 p-4 rounded-xl bg-slate-800 border border-slate-700/50">
+                    <span class="text-yellow-400 font-bold text-xl">⚡</span>
+                    <span class="font-medium text-slate-200">Menjadi orang yang lebih diandalkan saat mengelola data dan laporan</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Target Audience Section -->
+    <section class="py-20 px-6 bg-slate-50">
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="text-3xl font-extrabold text-slate-900 mb-12">Cocok Untuk</h2>
+
+            <div class="flex flex-wrap justify-center gap-3 max-w-3xl mx-auto">
+                <span class="px-5 py-3 rounded-2xl bg-white border border-slate-200 text-slate-700 font-bold shadow-sm">✅ Fresh Graduate</span>
+                <span class="px-5 py-3 rounded-2xl bg-white border border-slate-200 text-slate-700 font-bold shadow-sm">✅ Mahasiswa Tingkat Akhir</span>
+                <span class="px-5 py-3 rounded-2xl bg-white border border-slate-200 text-slate-700 font-bold shadow-sm">✅ Admin</span>
+                <span class="px-5 py-3 rounded-2xl bg-white border border-slate-200 text-slate-700 font-bold shadow-sm">✅ Finance</span>
+                <span class="px-5 py-3 rounded-2xl bg-white border border-slate-200 text-slate-700 font-bold shadow-sm">✅ HR</span>
+                <span class="px-5 py-3 rounded-2xl bg-white border border-slate-200 text-slate-700 font-bold shadow-sm">✅ Data Entry</span>
+                <span class="px-5 py-3 rounded-2xl bg-white border border-slate-200 text-slate-700 font-bold shadow-sm">✅ Staff Kantoran</span>
+                <span class="px-5 py-3 rounded-2xl bg-white border border-slate-200 text-slate-700 font-bold shadow-sm">✅ Siapa saja yang ingin meningkatkan skill Excel untuk dunia kerja</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Bonus Section -->
+    <section class="py-16 px-6 bg-gradient-to-tr from-excel-900 to-excel-800 text-white relative overflow-hidden">
+        <div class="max-w-4xl mx-auto relative z-10 text-center">
+            <div class="inline-flex items-center gap-2 bg-amber-500/20 text-amber-300 border border-amber-500/30 px-4 py-1 rounded-full text-sm font-bold mb-6">
+                🎁 BONUS EKSKLUSIF
+            </div>
+            <h2 class="text-3xl md:text-4xl font-extrabold mb-10">Makin Hemat dengan Bonus Tambahan Ini!</h2>
+
+            <div class="grid sm:grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
+                <div class="p-5 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/10">
+                    <span class="text-3xl mb-3 block">🎁</span>
+                    <h3 class="font-bold text-sm">Kumpulan Latihan Soal Excel</h3>
+                </div>
+                <div class="p-5 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/10">
+                    <span class="text-3xl mb-3 block">🎁</span>
+                    <h3 class="font-bold text-sm">Studi Kasus Dunia Kerja</h3>
+                </div>
+                <div class="p-5 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/10">
+                    <span class="text-3xl mb-3 block">🎁</span>
+                    <h3 class="font-bold text-sm">Template Latihan Siap Pakai</h3>
+                </div>
+                <div class="p-5 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/10">
+                    <span class="text-3xl mb-3 block">🎁</span>
+                    <h3 class="font-bold text-sm">Update Materi Gratis</h3>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing / Checkout Section -->
+    <section id="harga" class="py-24 px-6 bg-white relative">
+        <div class="max-w-3xl mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-extrabold text-slate-900 mb-2">Nilai Yang Kamu Dapatkan</h2>
+                <p class="text-slate-500">Bandingkan investasi kecil hari ini dengan nilai materi yang didapatkan</p>
+                <div class="w-20 h-1 bg-excel-600 mx-auto mt-4 rounded-full"></div>
+            </div>
+
+            <!-- Value Stack Grid -->
+            <div class="bg-slate-50 rounded-3xl p-6 md:p-8 border border-slate-100 shadow-sm mb-8">
+                <div class="space-y-4 mb-6">
+                    <div class="flex justify-between items-center pb-3 border-b border-slate-200">
+                        <span class="text-slate-600 font-medium">Panduan Excel Dasar</span>
+                        <span class="text-slate-400 line-through text-sm">Rp99.000</span>
+                    </div>
+                    <div class="flex justify-between items-center pb-3 border-b border-slate-200">
+                        <span class="text-slate-600 font-medium">100+ Shortcut Excel</span>
+                        <span class="text-slate-400 line-through text-sm">Rp49.000</span>
+                    </div>
+                    <div class="flex justify-between items-center pb-3 border-b border-slate-200">
+                        <span class="text-slate-600 font-medium">Formula Excel Praktis</span>
+                        <span class="text-slate-400 line-through text-sm">Rp99.000</span>
+                    </div>
+                    <div class="flex justify-between items-center pb-3 border-b border-slate-200">
+                        <span class="text-slate-600 font-medium">Kumpulan Soal Interview Excel</span>
+                        <span class="text-slate-400 line-through text-sm">Rp49.000</span>
+                    </div>
+                    <div class="flex justify-between items-center pb-3 border-b border-slate-200">
+                        <span class="text-slate-600 font-medium">Studi Kasus Dunia Kerja</span>
+                        <span class="text-slate-400 line-through text-sm">Rp99.000</span>
+                    </div>
+                    <div class="flex justify-between items-center pb-3 border-b border-slate-200">
+                        <span class="text-slate-600 font-medium">Template & Bonus</span>
+                        <span class="text-slate-400 line-through text-sm">Rp49.000</span>
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-center p-4 rounded-xl bg-red-50 text-red-900 mb-6">
+                    <span class="font-bold">Total Nilai Materi</span>
+                    <span class="font-extrabold text-lg line-through">Rp444.000</span>
+                </div>
+
+                <p class="text-center font-semibold text-slate-600 mb-8">
+                    Tapi hari ini kamu tidak perlu membayar sebesar itu.
+                </p>
+
+                <!-- Big Special Price Box -->
+                <div class="text-center p-8 bg-gradient-to-br from-excel-50 to-excel-100 border-2 border-excel-600 rounded-2xl relative overflow-hidden">
+                    <div class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] uppercase font-extrabold px-3 py-1 rounded-bl-lg tracking-wide shadow-md">
+                        20 Orang Pertama
+                    </div>
+
+                    <!-- 60-Minute Countdown Timer -->
+                    <div class="mb-8 max-w-sm mx-auto p-4 bg-red-600 text-white rounded-2xl shadow-lg border border-red-500 transform hover:scale-105 transition-all duration-300">
+                        <p class="text-xs font-bold uppercase tracking-widest mb-2 flex items-center justify-center gap-1">
+                            <span class="animate-ping inline-block w-2.5 h-2.5 rounded-full bg-white mr-1"></span>
+                            SISA WAKTU PROMO ANDA
+                        </p>
+                        <div class="flex justify-center items-center gap-2 font-mono text-3xl font-black">
+                            <div class="bg-red-800 px-3 py-1.5 rounded-xl shadow-inner min-w-[3.5rem]" id="timer-mins">60</div>
+                            <span class="text-red-300 animate-pulse">:</span>
+                            <div class="bg-red-800 px-3 py-1.5 rounded-xl shadow-inner min-w-[3.5rem]" id="timer-secs">00</div>
+                        </div>
+                        <p class="text-[10px] text-red-200 mt-2 font-semibold">Segera checkout sebelum harga kembali ke Rp 444.000!</p>
+                    </div>
+
+                    <h3 class="text-slate-700 font-bold text-sm uppercase tracking-wider mb-2">Harga Spesial Hari Ini</h3>
+                    <div class="text-4xl md:text-5xl font-extrabold text-slate-900 mb-2">
+                        Hanya <span class="text-excel-600">Rp 39.000</span>
+                    </div>
+                    <p class="text-xs text-slate-500 font-semibold mb-6">hanya untuk 20 orang pertama</p>
+
+                    <!-- Features Checklist -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-left max-w-md mx-auto mb-6 text-sm text-slate-700 font-semibold">
+                        <div class="flex items-center gap-2"><span>✅</span> Sekali bayar</div>
+                        <div class="flex items-center gap-2"><span>✅</span> Akses seumur hidup</div>
+                        <div class="flex items-center gap-2"><span>✅</span> Tidak ada biaya bulanan</div>
+                        <div class="flex items-center gap-2"><span>✅</span> Langsung dikirim otomatis ke email</div>
+                        <div class="flex items-center gap-2 md:col-span-2"><span>✅</span> Update materi gratis tidak perlu bayar lagi</div>
+                    </div>
+
+                    <!-- Payment Button Trigger (Direct Redirect Link) -->
+                    <a href="https://nadiaexcel.myscalev.com/s/checkout?variant_ids=562319&qty=1" class="block text-center w-full py-4 bg-excel-600 hover:bg-excel-700 text-white font-extrabold text-lg rounded-xl shadow-lg transition-all duration-200 transform active:scale-95">
+                        Ambil Akses Sekarang
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Closing / Urgency Section -->
+    <section class="py-20 px-6 bg-slate-900 text-white relative">
+        <div class="max-w-3xl mx-auto text-center">
+            <h2 class="text-2xl md:text-3xl font-extrabold mb-6">Sebelum Kamu Tutup Halaman Ini...</h2>
+            
+            <p class="text-slate-300 text-lg leading-relaxed mb-6 max-w-2xl mx-auto">
+                Setahun dari sekarang kamu tetap akan menggunakan Excel. <br><br>
+                Pertanyaannya... <br>
+                Apakah saat itu kamu masih bingung dengan rumus dasar dan shortcut sederhana? <br>
+                Atau sudah menjadi orang yang dipercaya saat ada pekerjaan yang berhubungan dengan data dan laporan?
+            </p>
+
+            <p class="text-excel-200 text-xl font-bold mb-8 italic">
+                Keputusan itu dimulai dari langkah kecil yang kamu ambil hari ini.
+            </p>
+
+            <!-- Direct Redirect Link -->
+            <a href="https://nadiaexcel.myscalev.com/s/checkout?variant_ids=562319&qty=1" class="inline-flex items-center justify-center px-8 py-4 text-lg font-extrabold text-slate-900 bg-amber-400 hover:bg-amber-300 active:bg-amber-500 rounded-xl shadow-lg transition-all transform hover:-translate-y-0.5">
+                Ambil Keputusan Terbaik Hari Ini
+            </a>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="py-20 px-6 bg-white">
+        <div class="max-w-3xl mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-extrabold text-slate-900">FAQ</h2>
+                <div class="w-16 h-1 bg-excel-600 mx-auto mt-4 rounded-full"></div>
+            </div>
+
+            <!-- FAQ Accordion Wrapper -->
+            <div class="space-y-4">
+                <!-- FAQ 1 -->
+                <div class="border border-slate-200 rounded-xl overflow-hidden">
+                    <button onclick="toggleFaq(1)" class="w-full flex justify-between items-center p-5 text-left font-bold text-slate-800 bg-slate-50 hover:bg-slate-100 transition-all">
+                        <span>Apakah cocok untuk pemula?</span>
+                        <svg id="faq-icon-1" class="w-5 h-5 text-slate-400 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div id="faq-answer-1" class="hidden p-5 border-t border-slate-200 text-slate-600 bg-white">
+                        Ya. Materi dibuat untuk orang yang belum pernah belajar Excel sekalipun.
+                    </div>
+                </div>
+
+                <!-- FAQ 2 -->
+                <div class="border border-slate-200 rounded-xl overflow-hidden">
+                    <button onclick="toggleFaq(2)" class="w-full flex justify-between items-center p-5 text-left font-bold text-slate-800 bg-slate-50 hover:bg-slate-100 transition-all">
+                        <span>Apakah bisa diakses lewat HP?</span>
+                        <svg id="faq-icon-2" class="w-5 h-5 text-slate-400 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div id="faq-answer-2" class="hidden p-5 border-t border-slate-200 text-slate-600 bg-white">
+                        Bisa. Materi dapat dipelajari melalui HP maupun laptop.
+                    </div>
+                </div>
+
+                <!-- FAQ 3 -->
+                <div class="border border-slate-200 rounded-xl overflow-hidden">
+                    <button onclick="toggleFaq(3)" class="w-full flex justify-between items-center p-5 text-left font-bold text-slate-800 bg-slate-50 hover:bg-slate-100 transition-all">
+                        <span>Apakah aksesnya terbatas?</span>
+                        <svg id="faq-icon-3" class="w-5 h-5 text-slate-400 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div id="faq-answer-3" class="hidden p-5 border-t border-slate-200 text-slate-600 bg-white">
+                        Tidak. Akses diberikan seumur hidup.
+                    </div>
+                </div>
+
+                <!-- FAQ 4 -->
+                <div class="border border-slate-200 rounded-xl overflow-hidden">
+                    <button onclick="toggleFaq(4)" class="w-full flex justify-between items-center p-5 text-left font-bold text-slate-800 bg-slate-50 hover:bg-slate-100 transition-all">
+                        <span>Kapan saya menerima materinya?</span>
+                        <svg id="faq-icon-4" class="w-5 h-5 text-slate-400 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div id="faq-answer-4" class="hidden p-5 border-t border-slate-200 text-slate-600 bg-white">
+                        Materi akan otomatis dikirim ke email setelah pembayaran berhasil.
+                    </div>
+                </div>
+
+                <!-- FAQ 5 -->
+                <div class="border border-slate-200 rounded-xl overflow-hidden">
+                    <button onclick="toggleFaq(5)" class="w-full flex justify-between items-center p-5 text-left font-bold text-slate-800 bg-slate-50 hover:bg-slate-100 transition-all">
+                        <span>Apakah ada update materi?</span>
+                        <svg id="faq-icon-5" class="w-5 h-5 text-slate-400 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div id="faq-answer-5" class="hidden p-5 border-t border-slate-200 text-slate-600 bg-white">
+                        Ya. Kamu akan mendapatkan update materi tanpa biaya tambahan.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 border-t border-slate-800 py-12 px-6 text-center text-slate-500 text-sm">
+        <div class="max-w-6xl mx-auto space-y-4">
+            <p class="font-bold text-slate-300">nadia_excel &copy; 2026. All Rights Reserved.</p>
+            <p class="max-w-md mx-auto text-xs text-slate-500">Mulai langkah karir profesionalmu bersama ratusan alumni yang telah sukses menaikkan performa kerja dan lulus interview kerja lewat materi Excel terstruktur.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript Interactions -->
+    <script>
+        // Toggle FAQ Accordion
+        function toggleFaq(id) {
+            const answer = document.getElementById(`faq-answer-${id}`);
+            const icon = document.getElementById(`faq-icon-${id}`);
+            
+            if (answer.classList.contains('hidden')) {
+                answer.classList.remove('hidden');
+                icon.classList.add('rotate-180');
+            } else {
+                answer.classList.add('hidden');
+                icon.classList.remove('rotate-180');
+            }
+        }
+
+        // Testimonial slider
+        let testimonialIndex = 0;
+        const testimonialTrack = document.getElementById('testimonial-track');
+        const testimonialDots = Array.from(document.querySelectorAll('#testimonial-dots button'));
+
+        function updateTestimonialDots() {
+            testimonialDots.forEach((dot, index) => {
+                dot.classList.toggle('bg-excel-600', index === testimonialIndex);
+                dot.classList.toggle('bg-slate-300', index !== testimonialIndex);
+            });
+        }
+
+        function goToTestimonial(index) {
+            testimonialIndex = index;
+            testimonialTrack.style.transform = `translateX(-${testimonialIndex * 100}%)`;
+            updateTestimonialDots();
+        }
+
+        function changeTestimonial(direction) {
+            testimonialIndex = (testimonialIndex + direction + testimonialDots.length) % testimonialDots.length;
+            goToTestimonial(testimonialIndex);
+        }
+
+        setInterval(() => {
+            changeTestimonial(1);
+        }, 6000);
+
+        updateTestimonialDots();
+
+        // Urgency dynamic countdown simulation (decreases slots slowly)
+        let slotCount = 15;
+        const slotEl = document.getElementById('slot-counter');
+        const interval = setInterval(() => {
+            if (slotCount > 1) {
+                slotCount--;
+                slotEl.textContent = slotCount;
+            } else {
+                clearInterval(interval);
+            }
+        }, 15000); // decrease every 15 seconds
+
+        // Robust & Persistent 60-Minute Countdown Timer
+        const COUNTDOWN_TIME = 60 * 60 * 1000; // 60 minutes in ms
+
+        function getCountdownTarget() {
+            let targetTime = localStorage.getItem('nadia_excel_timer_target');
+            if (!targetTime) {
+                targetTime = Date.now() + COUNTDOWN_TIME;
+                localStorage.setItem('nadia_excel_timer_target', targetTime);
+            }
+            return parseInt(targetTime, 10);
+        }
+
+        function updateCountdown() {
+            const targetTime = getCountdownTarget();
+            const now = Date.now();
+            let timeLeft = targetTime - now;
+
+            // If timer finished, reset to start another 60 mins (realistic infinite/reloop scarcity)
+            if (timeLeft <= 0) {
+                const newTarget = Date.now() + COUNTDOWN_TIME;
+                localStorage.setItem('nadia_excel_timer_target', newTarget);
+                timeLeft = COUNTDOWN_TIME;
+            }
+
+            const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+            // Display with leading zero padding
+            document.getElementById('timer-mins').textContent = String(minutes).padStart(2, '0');
+            document.getElementById('timer-secs').textContent = String(seconds).padStart(2, '0');
+        }
+
+        // Initialize and update every second
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+
+        // RANDOM PURCHASE NOTIFICATIONS EVERY 7 SECONDS
+        const buyers = [
+            { name: "Nisa Khoerunisa", time: "5 menit yang lalu" },
+            { name: "Budi Santoso", time: "1 menit yang lalu" },
+            { name: "Amanda Putri", time: "3 menit yang lalu" },
+            { name: "Ahmad Fauzi", time: "12 menit yang lalu" },
+            { name: "Diana Lestari", time: "8 menit yang lalu" },
+            { name: "Hendra Wijaya", time: "2 menit yang lalu" },
+            { name: "Siti Aminah", time: "6 menit yang lalu" },
+            { name: "Rizky Pratama", time: "4 menit yang lalu" },
+            { name: "Kartika Sari", time: "9 menit yang lalu" },
+            { name: "Adi Nugroho", time: "11 menit yang lalu" }
+        ];
+
+        let currentNotifIndex = 0;
+        const notificationToast = document.getElementById('purchase-notification');
+        const notifText = document.getElementById('notif-text');
+        const notifTime = document.getElementById('notif-time');
+
+        function showNotification() {
+            const buyer = buyers[currentNotifIndex];
+            
+            // Set Text Content
+            notifText.innerHTML = `<span class="font-bold text-slate-900">${buyer.name}</span> berhasil membeli <span class="font-bold text-excel-700">"Excel Ultimate Pack"</span>`;
+            notifTime.textContent = buyer.time;
+
+            // Slide in Toast (Show)
+            notificationToast.classList.remove('-translate-x-full', 'opacity-0', 'pointer-events-none');
+            notificationToast.classList.add('translate-x-0', 'opacity-100');
+
+            // Hide after 4 seconds (keeping 3 seconds idle before next trigger)
+            setTimeout(() => {
+                hideNotification();
+            }, 4000);
+
+            // Set index for next loop
+            currentNotifIndex = (currentNotifIndex + 1) % buyers.length;
+        }
+
+        function hideNotification() {
+            notificationToast.classList.remove('translate-x-0', 'opacity-100');
+            notificationToast.classList.add('-translate-x-full', 'opacity-0', 'pointer-events-none');
+        }
+
+        // Trigger first notification 3 seconds after page loads
+        setTimeout(() => {
+            showNotification();
+            // Loop every 7 seconds (4 seconds visible + 3 seconds cooldown)
+            setInterval(showNotification, 10000);
+        }, 5000);
+    </script>
+</body>
+</html>
